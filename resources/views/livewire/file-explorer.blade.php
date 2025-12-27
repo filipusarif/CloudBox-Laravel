@@ -117,12 +117,15 @@
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
         
         @foreach($folders as $folder)
-            <div class="group relative p-4 border rounded-xl flex flex-col items-center hover:bg-gray-50 transition shadow-sm bg-white">
+            <div wire:key="folder-{{ $folder->id }}" class="group relative p-4 border rounded-xl flex flex-col items-center hover:bg-gray-50 transition shadow-sm bg-white">
                 <div @if($viewMode === 'explorer') wire:click="openFolder({{ $folder->id }})" @endif class="{{ $viewMode === 'explorer' ? 'cursor-pointer' : '' }} flex flex-col items-center">
                     <svg class="w-16 h-16 {{ $viewMode === 'trash' ? 'text-gray-300' : 'text-yellow-500' }}" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
                     </svg>
-                    <span class="mt-2 text-sm text-center font-medium text-gray-700 truncate w-full px-2">{{ $folder->name }}</span>
+                    <span class="mt-2 text-xs text-center font-medium text-gray-700 w-full px-2 line-clamp-2 break-all" 
+                        title="{{ $folder->name }}">
+                        {{ $folder->name }}
+                    </span>
                 </div>
                 
                 <div class="absolute top-2 right-2 hidden group-hover:flex space-x-1">
@@ -143,18 +146,25 @@
         @endforeach
 
         @foreach($files as $file)
-            <div class="group relative p-4 border rounded-xl flex flex-col items-center hover:shadow-md transition bg-white">
+            <div wire:key="file-{{ $file->id }}" class="group relative p-4 border rounded-xl flex flex-col items-center hover:shadow-md transition bg-white">
                 <div @if($viewMode === 'explorer') wire:click="openPreview({{ $file->id }})" @endif class="{{ $viewMode === 'explorer' ? 'cursor-pointer' : '' }} flex flex-col items-center">
                     <div class="w-16 h-16 flex items-center justify-center">
-                        @if(in_array($file->extension, ['jpg', 'png', 'jpeg', 'gif', 'webp']))
+                        @if(in_array($file->extension, ['jpg', 'png', 'jpeg', 'gif', 'webp', 'svg']))
                             <svg class="w-12 h-12 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        @elseif(in_array($file->extension, ['mp4', 'webm', 'mov']))
+                            <svg class="w-12 h-12 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        @elseif(in_array($file->extension, ['mp3', 'wav', 'ogg']))
+                            <svg class="w-12 h-12 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2z"></path></svg>
                         @elseif($file->extension === 'pdf')
                             <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
                         @else
                             <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                         @endif
                     </div>
-                    <span class="mt-2 text-sm text-center font-medium text-gray-700 truncate w-full px-2">{{ $file->name }}</span>
+                    <span class="mt-2 text-xs text-center font-medium text-gray-700 w-full px-2 line-clamp-2 break-all" 
+                        title="{{ $file->name }}">
+                        {{ $file->name }}
+                    </span>
                 </div>
 
                 <div class="absolute top-2 right-2 hidden group-hover:flex space-x-1">
@@ -203,20 +213,69 @@
     <div class="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-[60] p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-5xl max-h-[95vh] flex flex-col overflow-hidden">
             <div class="p-4 border-b flex justify-between items-center bg-gray-50">
-                <h3 class="font-bold text-gray-800 truncate">{{ $selectedFileForPreview->name }}</h3>
-                <button wire:click="closePreview" class="text-gray-500 hover:text-red-600 text-xl">✕</button>
+                <div class="flex items-center space-x-3 truncate">
+                    <span class="p-2 bg-blue-100 text-blue-600 rounded">
+                        @if(in_array($selectedFileForPreview->extension, ['jpg', 'png', 'jpeg', 'gif', 'webp', 'svg'])) 🖼️ 
+                        @elseif(in_array($selectedFileForPreview->extension, ['mp4', 'webm'])) 🎬 
+                        @elseif(in_array($selectedFileForPreview->extension, ['mp3', 'wav'])) 🎵 
+                        @elseif($selectedFileForPreview->extension === 'pdf') 📄 
+                        @else 📁 @endif
+                    </span>
+                    <h3 class="font-bold text-gray-800 truncate">{{ $selectedFileForPreview->name }}</h3>
+                </div>
+                <button wire:click="closePreview" class="text-gray-400 hover:text-red-600 text-2xl transition">✕</button>
             </div>
-            <div class="flex-1 overflow-auto p-4 bg-gray-200 flex justify-center items-center">
-                @if(in_array($selectedFileForPreview->extension, ['jpg', 'png', 'jpeg', 'gif', 'webp']))
-                    <img src="{{ route('file.view', $selectedFileForPreview->id) }}" class="max-w-full max-h-[80vh] object-contain shadow-lg">
+            
+            <div class="flex-1 overflow-auto p-4 bg-gray-900 flex justify-center items-center min-h-[300px]">
+                
+                {{-- 1. PREVIEW FOTO --}}
+                @if(in_array($selectedFileForPreview->extension, ['jpg', 'png', 'jpeg', 'gif', 'webp', 'svg']))
+                    <img src="{{ route('file.view', $selectedFileForPreview->id) }}" 
+                        class="max-w-full max-h-[75vh] object-contain shadow-2xl animate-in zoom-in duration-300">
+
+                {{-- 2. PREVIEW VIDEO --}}
+                @elseif(in_array($selectedFileForPreview->extension, ['mp4', 'webm', 'ogg']))
+                    <video controls crossorigin playsinline class="w-full max-h-[75vh] outline-none">
+                        <source src="{{ route('file.view', $selectedFileForPreview->id) }}" type="video/{{ $selectedFileForPreview->extension }}">
+                        Browser Anda tidak mendukung tag video.
+                    </video>
+
+                {{-- 3. PREVIEW AUDIO/MUSIK --}}
+                @elseif(in_array($selectedFileForPreview->extension, ['mp3', 'wav', 'ogg']))
+                    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl text-center">
+                        <div class="mb-6 animate-pulse">
+                            <span class="text-6xl">🎵</span>
+                        </div>
+                        <h4 class="mb-4 text-gray-600 font-medium">{{ $selectedFileForPreview->name }}</h4>
+                        <audio controls class="w-full">
+                            <source src="{{ route('file.view', $selectedFileForPreview->id) }}" type="audio/{{ $selectedFileForPreview->extension }}">
+                            Browser Anda tidak mendukung tag audio.
+                        </audio>
+                    </div>
+
+                {{-- 4. PREVIEW PDF --}}
                 @elseif($selectedFileForPreview->extension === 'pdf')
-                    <iframe src="{{ route('file.view', $selectedFileForPreview->id) }}" class="w-full h-[80vh] rounded" frameborder="0"></iframe>
+                    <iframe src="{{ route('file.view', $selectedFileForPreview->id) }}" 
+                            class="w-full h-[75vh] rounded shadow-inner bg-white" 
+                            frameborder="0"></iframe>
+
+                {{-- 5. JIKA TIPE FILE TIDAK DIDUKUNG PREVIEW --}}
                 @else
-                    <div class="text-center p-10 bg-white rounded-lg shadow">
-                        <p class="mb-4 text-gray-600">Preview tidak tersedia untuk tipe file ini.</p>
-                        <a href="{{ route('file.view', $selectedFileForPreview->id) }}" download class="inline-block px-6 py-2 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition">Download File</a>
+                    <div class="text-center p-12 bg-white rounded-2xl shadow-xl max-w-sm">
+                        <div class="text-5xl mb-4">📎</div>
+                        <h3 class="text-lg font-bold text-gray-800 mb-2">Preview Tidak Tersedia</h3>
+                        <p class="text-sm text-gray-500 mb-6">File <strong>.{{ $selectedFileForPreview->extension }}</strong> tidak dapat ditampilkan secara langsung.</p>
+                        <a href="{{ route('file.view', $selectedFileForPreview->id) }}" download 
+                        class="inline-block w-full py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition shadow-lg">
+                            Download File
+                        </a>
                     </div>
                 @endif
+            </div>
+
+            <div class="p-4 border-t bg-gray-50 flex justify-between items-center text-xs text-gray-500">
+                <span>Ukuran: {{ number_format($selectedFileForPreview->size / 1024 / 1024, 2) }} MB</span>
+                <span>Tipe: {{ strtoupper($selectedFileForPreview->extension) }}</span>
             </div>
         </div>
     </div>

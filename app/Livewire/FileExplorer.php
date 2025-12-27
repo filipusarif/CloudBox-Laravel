@@ -230,17 +230,23 @@ class FileExplorer extends Component
         $breadcrumbs = [];
         if ($this->currentFolderId && !$this->search && !$this->category) {
             $tempFolderId = $this->currentFolderId;
-            while ($tempFolderId) {
+            $depthLimit = 20; 
+            
+            while ($tempFolderId && $depthLimit > 0) {
                 $f = \App\Models\Folder::find($tempFolderId);
                 if ($f) {
                     array_unshift($breadcrumbs, [
                         'id' => $f->id,
                         'name' => $f->name
                     ]);
+                    
+                    if ($tempFolderId == $f->parent_id) break;
+                    
                     $tempFolderId = $f->parent_id;
                 } else {
                     $tempFolderId = null;
                 }
+                $depthLimit--;
             }
         }
 
