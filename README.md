@@ -39,7 +39,7 @@ CloudBox adalah platform penyimpanan awan (Cloud Storage) berbasis web yang mode
 
 ## 🚀 Panduan Instalasi (Setup Project)
 
-Ikuti langkah-langkah di bawah ini untuk menjalankan CloudBox di mesin lokal Anda.
+Ikuti langkah-langkah di bawah ini untuk menjalankan CloudBox di mesin lokal.
 
 ### 1. Prasyarat
 
@@ -66,7 +66,7 @@ npm install
 
 ### 4. Konfigurasi Environment
 
-Salin file `.env.example` menjadi `.env` dan sesuaikan pengaturan database Anda.
+Salin file `.env.example` menjadi `.env` dan sesuaikan pengaturan database.
 
 ```bash
 cp .env.example .env
@@ -77,7 +77,7 @@ Jangan lupa untuk mengatur folder penyimpanan:
 
 ```env
 APP_NAME=CloudBox
-DB_DATABASE=nama_database_anda
+DB_DATABASE=nama_database
 
 # Konfigurasi Disk (Jika menggunakan disk khusus)
 FILESYSTEM_DISK=private
@@ -121,7 +121,7 @@ npm run dev
 
 ## ⚙️ Konfigurasi Penting (Upload 500MB)
 
-Agar fitur upload file besar berjalan lancar, pastikan Anda menyesuaikan konfigurasi server Anda:
+Agar fitur upload file besar berjalan lancar, pastikan menyesuaikan konfigurasi server:
 
 **PHP.ini:**
 
