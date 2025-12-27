@@ -17,6 +17,16 @@ CloudBox adalah platform penyimpanan awan (Cloud Storage) berbasis web yang mode
 
 ---
 
+## 📸 Preview
+<img width="1311" height="768" alt="Image" src="https://github.com/user-attachments/assets/2c7a2bc5-dccd-42e9-bfc5-bc2f9a0a5579" />
+
+<img width="1311" height="768" alt="Image" src="https://github.com/user-attachments/assets/2dc02366-6f31-4403-b2be-5eee88864874" />
+
+<img width="1311" height="768" alt="Image" src="https://github.com/user-attachments/assets/94c618dc-af4c-4836-adef-9438a171e0d9" />
+
+<img width="1345" height="769" alt="Image" src="https://github.com/user-attachments/assets/b8b027d0-c04e-48ed-b6a7-ee794f8251b5" />
+---
+
 ## 🛠️ Tech Stack
 
 * **Framework**: [Laravel 12](https://laravel.com)
@@ -129,10 +139,6 @@ max_execution_time = 600
 client_max_body_size 500M;
 
 ```
-
----
-
-## 📸 Preview
 
 ---
 
